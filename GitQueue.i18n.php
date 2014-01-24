@@ -30,5 +30,5 @@ $messages[ 'en' ] = array(
 	'log-description-gitqueue' => 'This log tracks the various actions performed in the Git Queue extension.',
 	'logentry-gitqueue-add' => '$1 requested a new Git Repo.',
 	'gitqueue-request-success' => 'Success',
-	'gitqueue-request-success-test' => 'You have successfully request a Git Repo.'
+	'gitqueue-request-success-test' => 'You have successfully requested a Git Repo.'
 );
