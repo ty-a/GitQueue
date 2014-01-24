@@ -76,13 +76,12 @@
 				$logEntry = new ManualLogEntry( 'gitqueue', 'add' );
 				$logEntry->setPerformer( $wgUser );
 				//FIXME: Make target the newly made repo
-				$logEntry->setTarget( $wgTitle );
+				$logEntry->setTarget( Title::newFromText( "Special:GitQueue" ) );
 				
 				$logid = $logEntry->insert();
 				$logEntry->publish( $logid);
 				//FIXME: This shouldn't have to be called, but in the execute method
 				//       $form->show() isn't returning true for some reason
-				$wgOut->addWikiText(wfTimestamp( TS_UNIX ) );
 				$this->onSuccess();
 			}
 		}
