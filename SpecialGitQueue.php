@@ -4,6 +4,7 @@
 		function __construct() {
 			parent::__construct( 'GitQueue', 'GitQueue' );
 		}
+		
 		function execute( $par ) {
 			$out = $this->getOutput();
 			
@@ -14,13 +15,19 @@
 				return;
 			}
 			
-			$this->table = new GitQueueTablePager();
-			
-			$out->addHTML( 
-				$this->table->getNavigationBar()  . '<ol>' .
-				$this->table->getBody() . '</ol>' . 
-				$this->table->getNavigationBar()				
-			);
+			if(empty($par)) {
+				$this->table = new GitQueueTablePager();
+				
+				$out->addHTML( 
+					$this->table->getNavigationBar()  . '<ol>' .
+					$this->table->getBody() . '</ol>' . 
+					$this->table->getNavigationBar()				
+				);
+			} else {
+				//load form
+				$data = GitQueueShared::getInfoById( $par );
+				var_dump($data);
+			}
 		}
 	}
 	
@@ -63,7 +70,7 @@
 		function getQueryInfo() {
 			return array(
 				'tables' => 'gitqueue',
-				'fields' => array( 'gq_projectname', 'gq_requester', 'gq_submittime' ),
+				'fields' => array( 'gq_projectname', 'gq_requester', 'gq_submittime', 'gq_id' ),
 				'conds' => array( 'gq_isdeleted' => 'FALSE')
 			);
 		}

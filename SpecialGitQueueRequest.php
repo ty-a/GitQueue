@@ -72,11 +72,13 @@
 				__METHOD__
 			);
 			
+			$this->id = $dbw->insertId();
+			
 			if( $result == true ) {
 				$logEntry = new ManualLogEntry( 'gitqueue', 'add' );
 				$logEntry->setPerformer( $wgUser );
 				//FIXME: Make target the newly made repo
-				$logEntry->setTarget( Title::newFromText( "Special:GitQueue" ) );
+				$logEntry->setTarget( Title::newFromText( "Special:GitQueue/" . $this->id ) );
 				
 				$logid = $logEntry->insert();
 				$logEntry->publish( $logid);

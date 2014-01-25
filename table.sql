@@ -7,6 +7,7 @@ CREATE TABLE gitqueue (
 	gq_workflow varchar(5) binary not null,
 	gq_comment varchar(255) binary,
 	gq_submittime varchar(255) binary not null,
-	gq_isdeleted boolean not null default FALSE
+	gq_isdeleted boolean not null default FALSE,
+	gq_closer varchar(255) binary not null default ''
 
 );

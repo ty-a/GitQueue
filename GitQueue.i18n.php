@@ -28,7 +28,7 @@ $messages[ 'en' ] = array(
 	'action-GitQueueRequest' => 'request a Git repo',
 	'log-name-gitqueue' => 'Git Queue log',	
 	'log-description-gitqueue' => 'This log tracks the various actions performed in the Git Queue extension.',
-	'logentry-gitqueue-add' => '$1 requested a new Git Repo.',
+	'logentry-gitqueue-add' => '$1 requested a new Git Repo at $3.',
 	'gitqueue-request-success' => 'Success',
 	'gitqueue-request-success-test' => 'You have successfully requested a Git Repo.'
 );
