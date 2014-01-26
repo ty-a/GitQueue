@@ -28,11 +28,10 @@
 				//load form
 				$this->id = $par;
 				$this->data = GitQueueShared::getInfoById( $par );
+				$out->addWikiText("You are viewing a request for a GitQueue. To see all the requests, please go to [[Special:GitQueue]]. To make a request, please go to [[Special:GitQueueRequest]].");
 				
 				$form = $this->getForm();
-				if ( $form->show() ) {
-					$this->onSuccess();
-				}
+				$form->show();
 			}
 		}
 		
@@ -44,9 +43,20 @@
 				return;
 			}
 			
-			$dbw = wfGetDB( DB_MASTER );
+			$dbh = wfGetDB( DB_MASTER );
+			if( $data["Status"] == $data["OldStatus"] ) {
+				$change = False;
+			} else if ( $data["Status"] == "done" ) {
+				$change = "done";
+			} else if ( $data["Status"] == "hold" ) {
+				$change = "hold";
+			}
 			
-			$dbw->update(
+			if( $change == False ) {
+				return;
+			}
+			
+			$result = $dbh->update(
 				'gitqueue',
 				array (
 					#field name => new value
@@ -54,7 +64,18 @@
 				),
 				array( 'gq_id = ' . $this->id )
 			);
-			
+
+			if( $result ) {
+				$this->onSuccess();
+				
+				$logEntry = new ManualLogEntry( 'gitqueue', 'change' );
+				$logEntry->setPerformer( $wgUser );
+				$logEntry->setTarget( Title::newFromText( "Special:GitQueue/" . $this->id ) );
+				$logEntry->setComment( "Changed Status to " . $change );
+				
+				$logid = $logEntry->insert();
+				$logEntry->publish( $logid );
+			}
 		}
 		
 		protected function getFormFields() {
@@ -101,7 +122,11 @@
 					'default' => $this->data["comment"],
 					'disabled' => true
 				),
-
+				'OldStatus' => array(
+					'type' => 'hidden',
+					'default' => $this->data["status"],
+					'disabled' => true
+				)
 			);
 			
 			if( $wgUser->isAllowed( 'GitQueueAdmin' ) ) {
@@ -134,6 +159,13 @@
 			}
 
 			return $a;
+		}
+		
+		function onSuccess() {
+			$out = $this->getOutput();
+			
+			$out->addWikiText("You have successfully updated the request!");
+			
 		}
 	}
 	

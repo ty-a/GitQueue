@@ -48,5 +48,4 @@ EOT;
 	$wgLogActionsHandlers['gitqueue/add'] = 'LogFormatter';
 	$wgLogActionsHandlers['gitqueue/delete'] = 'LogFormatter';
 	$wgLogActionsHandlers['gitqueue/undelete'] = 'LogFormatter';
-	$wgLogActionsHandlers['gitqueue/close'] = 'LogFormatter';
-	$wgLogActionsHandlers['gitqueue/hold'] = 'LogFormatter';
+	$wgLogActionsHandlers['gitqueue/change'] = 'LogFormatter';

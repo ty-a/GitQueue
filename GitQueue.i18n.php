@@ -31,5 +31,7 @@ $messages[ 'en' ] = array(
 	'logentry-gitqueue-add' => '$1 requested a new Git Repo at $3.',
 	'gitqueue-request-success' => 'Success',
 	'gitqueue-request-success-test' => 'You have successfully requested a Git Repo.',
-	'gitqueue-admin-status-label' => 'Status of Request:'
+	'gitqueue-admin-status-label' => 'Status of Request:',
+	'gitqueue-legend' => 'View a Git Queue Request',
+	'logentry-gitqueue-change' => '$1 modified Git Repo at $3'
 );
