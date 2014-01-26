@@ -18,7 +18,7 @@
 			if(empty($par)) {
 				$this->table = new GitQueueTablePager();
 				
-				$out->addWikiText("This is the Git Request Queue. You can request a Git Repo at [[Special:GitQueueRequest]].");
+				$out->addWikiText( "This is the Git Request Queue. You can request a Git Repo at [[Special:GitQueueRequest]]." );
 				$out->addHTML( 
 					$this->table->getNavigationBar()  . '<ol>' .
 					$this->table->getBody() . '</ol>' . 
@@ -27,8 +27,8 @@
 			} else {
 				//load form
 				$this->id = $par;
-				$this->data = GitQueueShared::getInfoById( $par );
-				$out->addWikiText("You are viewing a request for a GitQueue. To see all the requests, please go to [[Special:GitQueue]]. To make a request, please go to [[Special:GitQueueRequest]].");
+				$this->data = $this->getInfoById( $par );
+				$out->addWikiText( "You are viewing a request for a GitQueue. To see all the requests, please go to [[Special:GitQueue]]. To make a request, please go to [[Special:GitQueueRequest]]." );
 				
 				$form = $this->getForm();
 				$form->show();
@@ -71,7 +71,7 @@
 				$logEntry = new ManualLogEntry( 'gitqueue', 'change' );
 				$logEntry->setPerformer( $wgUser );
 				$logEntry->setTarget( Title::newFromText( "Special:GitQueue/" . $this->id ) );
-				$logEntry->setComment( "Changed Status to " . $change );
+				$logEntry->setComment( "Changed status to " . $change );
 				
 				$logid = $logEntry->insert();
 				$logEntry->publish( $logid );
@@ -165,7 +165,31 @@
 			$out = $this->getOutput();
 			
 			$out->addWikiText("You have successfully updated the request!");
+		}
+		
+		function getInfoById( $id ) {
+			$dbr = wfGetDB( DB_SLAVE );
 			
+			$data = $dbr->select(
+				'gitqueue',
+				array( 'gq_requester', 'gq_gerritname', 'gq_comment', 'gq_closer', 'gq_projectname', 'gq_workflow', 'gq_status' ),
+				'gq_id = ' . $id,
+				__METHOD__
+			);	
+			
+			foreach( $data as $row ) {
+				$result = array(
+					"title" =>$row->gq_projectname,
+					"requester" => $row->gq_requester,
+					"gerritname" => $row->gq_gerritname,
+					"comment" => $row->gq_comment,
+					"closer" => $row->gq_comment,
+					"projectname" => $row->gq_projectname,
+					"workflow" => $row->gq_workflow,
+					"status" => $row->gq_status
+				);
+			}
+			return $result; 
 		}
 	}
 	
@@ -212,5 +236,4 @@
 				'conds' => array( 'gq_isdeleted' => 'FALSE')
 			);
 		}
-	
 	}
