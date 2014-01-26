@@ -7,7 +7,7 @@ class GitQueueShared {
 		
 		$data = $dbr->select(
 			'gitqueue',
-			array( 'gq_requester', 'gq_gerritname', 'gq_comment', 'gq_closer', 'gq_projectname', 'gq_workflow' ),
+			array( 'gq_requester', 'gq_gerritname', 'gq_comment', 'gq_closer', 'gq_projectname', 'gq_workflow', 'gq_status' ),
 			'gq_id = ' . $id,
 			__METHOD__
 		);	
@@ -21,6 +21,7 @@ class GitQueueShared {
 				"closer" => $row->gq_comment,
 				"projectname" => $row->gq_projectname,
 				"workflow" => $row->gq_workflow,
+				"status" => $row->gq_status
 			);
 		}
 		return $result; 

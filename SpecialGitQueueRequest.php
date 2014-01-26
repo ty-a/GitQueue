@@ -63,7 +63,7 @@
 					"gq_requester" => $wgUser->getName(),
 					"gq_gerritname" => $data["GerritUsername"],
 					"gq_projectname" => $data["ProjectName"],
-					"gq_status" => "new",
+					"gq_status" => "open",
 					"gq_workflow" => $data["WorkFlowType"],
 					"gq_comment" => $data["Comments"],
 					"gq_submittime" => wfTimestamp( TS_UNIX ),
@@ -77,7 +77,6 @@
 			if( $result == true ) {
 				$logEntry = new ManualLogEntry( 'gitqueue', 'add' );
 				$logEntry->setPerformer( $wgUser );
-				//FIXME: Make target the newly made repo
 				$logEntry->setTarget( Title::newFromText( "Special:GitQueue/" . $this->id ) );
 				
 				$logid = $logEntry->insert();
@@ -92,7 +91,7 @@
 			$this->setParameter( $par );
 			$this->setHeaders();
 
-			// This will throw exceptions if there's a problem
+			// check their privilege 
 			$this->checkExecutePermissions( $this->getUser() );
 
 			$form = $this->getForm();

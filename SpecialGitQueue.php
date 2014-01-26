@@ -1,6 +1,6 @@
 <?php
-	class SpecialGitQueue extends SpecialPage {
-	
+	class SpecialGitQueue extends FormSpecialPage {
+		
 		function __construct() {
 			parent::__construct( 'GitQueue', 'GitQueue' );
 		}
@@ -18,6 +18,7 @@
 			if(empty($par)) {
 				$this->table = new GitQueueTablePager();
 				
+				$out->addWikiText("This is the Git Request Queue. You can request a Git Repo at [[Special:GitQueueRequest]].");
 				$out->addHTML( 
 					$this->table->getNavigationBar()  . '<ol>' .
 					$this->table->getBody() . '</ol>' . 
@@ -25,9 +26,114 @@
 				);
 			} else {
 				//load form
-				$data = GitQueueShared::getInfoById( $par );
-				var_dump($data);
+				$this->id = $par;
+				$this->data = GitQueueShared::getInfoById( $par );
+				
+				$form = $this->getForm();
+				if ( $form->show() ) {
+					$this->onSuccess();
+				}
 			}
+		}
+		
+		function onSubmit( array $data ) {
+			global $wgUser;
+			
+			if( !$wgUser->isAllowed( 'GitQueueAdmin' ) ) {
+				// FIXME: Make it so they don't have a submit button
+				return;
+			}
+			
+			$dbw = wfGetDB( DB_MASTER );
+			
+			$dbw->update(
+				'gitqueue',
+				array (
+					#field name => new value
+					'gq_status' => $data["Status"]
+				),
+				array( 'gq_id = ' . $this->id )
+			);
+			
+		}
+		
+		protected function getFormFields() {
+			global $wgUser;
+			
+			$a = array(
+				'id' => array( 
+					'type' => 'hidden',
+					'required' => true,
+					'default' => $this->id
+				),
+				'GerritUsername' => array(
+					'type' => 'text',
+					'label-message' => 'gitqueue-gerrit-username',
+					'tabindex' => '1',
+					'size' => '45',
+					'autofocus' => true,
+					'default' => $this->data["gerritname"],
+					'disabled' => true
+				),
+				'ProjectName' => array(
+					'type' => 'text',
+					'label-message' => 'gitqueue-project-name',
+					'tabindex' => '2',
+					'size' => '45',
+					'default' => $this->data["projectname"],
+					'disabled' => true
+				),
+				'WorkFlowType' => array(
+					'type' => 'radio',
+					'label-message' => 'gitqueue-workflow-label',
+					'options' => array(
+						#display => value
+						'Open Merge' => 'open',
+						'Merge Review' => 'merge'
+					),
+					'default' => $this->data["workflow"],
+					'disabled' => true
+				),
+				'Comments' => array(
+					'type' => 'textarea',
+					'label-message' => 'gitqueue-comments-label',
+					'tabindex' => '4',
+					'default' => $this->data["comment"],
+					'disabled' => true
+				),
+
+			);
+			
+			if( $wgUser->isAllowed( 'GitQueueAdmin' ) ) {
+				
+				$a['Status'] = array(
+					'type' => 'radio',
+					'label-message' => 'gitqueue-admin-status-label',
+					'tabindex' => '5',
+					'default' => $this->data["status"],
+					'options' => array(
+						'Open' => 'open',
+						'On Hold' => 'hold',
+						'Complete' => 'done'
+					)
+				);
+				
+			} else {
+				$a['Status'] = array(
+					'type' => 'radio',
+					'label-message' => 'gitqueue-admin-status-label',
+					'tabindex' => '5',
+					'default' => $this->data["status"],
+					'options' => array(
+						'Open' => 'open',
+						'On Hold' => 'hold',
+						'Complete' => 'done'
+					),
+					'disabled' => true
+				);
+			}
+
+			return $a;
 		}
 	}
 	
